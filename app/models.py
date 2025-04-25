@@ -1,7 +1,3 @@
-from flask_sqlalchemy import SQLAlchemy
-
-# Instanciando o objeto db
-db = SQLAlchemy()
 
 # Tabela User (Usuários)
 class User(db.Model):

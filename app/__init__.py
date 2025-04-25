@@ -1,16 +1,37 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from app.config import Config
+from flasgger import Swagger
 
-# Criação da instância do app
 app = Flask(__name__)
-app.config.from_object(Config)
+swagger = Swagger(app)
 
-# Inicializa o banco de dados
-db = SQLAlchemy(app)
+@app.route('/api/v1/alunos', methods=['GET'])
+def listar_alunos():
+    """
+    Recupera a lista de alunos.
+    ---
+    responses:
+      200:
+        description: Lista de alunos.
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              nome:
+                type: string
+                example: "João Silva"
+              idade:
+                type: integer
+                example: 5
+    """
+    alunos = [
+        {"id": 1, "nome": "João Silva", "idade": 5},
+        {"id": 2, "nome": "Maria Oliveira", "idade": 4}
+    ]
+    return jsonify({"alunos": alunos})
 
-# Importa os models e os cruds
-from app import models
-from app.crud import crudAtividade, crudPagamento, crudPresenca, crudProfessor, crudTurma, crudUsuario
-
-# Aqui você pode adicionar as rotas, etc.
+if __name__ == "__main__":
+    app.run(debug=True)

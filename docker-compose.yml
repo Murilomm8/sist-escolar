@@ -1,35 +1,28 @@
-
+version: '3.8'
 
 services:
   db:
     image: postgres:13
+    container_name: sisescolar-db
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: admin
-      POSTGRES_DB: escola
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sisescolar
+      LANG: en_US.UTF-8
+      LC_ALL: en_US.UTF-8
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - app_network
+    restart: unless-stopped
 
-  app:
-    build: .
-    environment:
-      FLASK_APP: app
-      FLASK_ENV: development
-      DATABASE_URL: postgres://admin:admin@db:5432/escola
-    ports:
-      - "5000:5000"
-    depends_on:
-      - db
-    networks:
-      - app_network
+# Você pode adicionar o serviço do app aqui futuramente:
+#  app:
+#    build: .
+#    ports:
+#      - "5000:5000"
+#    depends_on:
+#      - db
 
 volumes:
   postgres_data:
-
-networks:
-  app_network:
-    driver: bridge
