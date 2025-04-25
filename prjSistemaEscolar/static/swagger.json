@@ -1,0 +1,29 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "title": "Meu App",
+      "description": "API de exemplo",
+      "version": "1.0.0"
+    },
+    "paths": {
+      "/hello": {
+        "get": {
+          "summary": "Retorna uma saudação",
+          "responses": {
+            "200": {
+              "description": "Saudação de boas-vindas",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  

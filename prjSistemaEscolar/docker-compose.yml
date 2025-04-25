@@ -1,0 +1,36 @@
+
+
+services:
+  web:
+    build: .
+    command: flask run --host=0.0.0.0
+    volumes:
+      - .:/app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      FLASK_APP: app
+      FLASK_ENV: development
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: sisescolar
+      SWAGGER_HOST: localhost:5000
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sisescolar
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
