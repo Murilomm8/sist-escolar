@@ -1,30 +1,43 @@
 # -*- coding: utf-8 -*-
 """
-API de Gestão Escolar - Back-end em Flask
-
-Projeto: sis-esco
+API de Gestão Escolar - Back-end em Flask (Projeto sis-esco)
 
 Este arquivo implementa uma API RESTful com endpoints para gerenciamento de:
     - Pagamentos
     - Presenças
     - Atividades
 
-Utiliza Flask e Flask_SQLAlchemy com SQLite para persistência de dados.
-Cada rota possui comentários que auxiliam na compreensão e manutenção do código.
+A documentação Swagger dos endpoints pode ser acessada em: /api/docs
+
+Utiliza:
+  - Flask
+  - Flask_SQLAlchemy
+  - Flasgger (para Swagger UI)
+  
+Observação: O SQLite é usado para persistência dos dados.
 """
 
 import os
+from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from flasgger import Swagger
 
 # Criação da aplicação Flask
 app = Flask(__name__)
 
-# Configuração do banco de dados: este exemplo utiliza SQLite para facilitar testes locais.
+# Configuração do banco de dados (SQLite)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'school.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Configuração do Swagger para que a documentação fique acessível em /api/docs
+app.config['SWAGGER'] = {
+    'title': 'Sis-esco API',
+    'uiversion': 3,
+    'specs_route': '/api/docs'
+}
+swagger = Swagger(app)
 
 # Inicialização do SQLAlchemy
 db = SQLAlchemy(app)
@@ -34,12 +47,13 @@ db = SQLAlchemy(app)
 class Payment(db.Model):
     """
     Modelo para representar um pagamento.
-    Atributos:
-        id: identificador único.
-        student_name: nome do aluno ou responsável associado ao pagamento.
-        amount: valor pago.
-        payment_date: data/hora do pagamento.
-        status: status do pagamento ('pago' ou 'pendente').
+
+    Attributes:
+      id (int): identificador único.
+      student_name (str): nome do aluno ou responsável.
+      amount (float): valor do pagamento.
+      payment_date (datetime): data/hora do pagamento.
+      status (str): 'pago' ou 'pendente'.
     """
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
@@ -50,25 +64,29 @@ class Payment(db.Model):
 class Attendance(db.Model):
     """
     Modelo para representar um registro de presença.
-    Atributos:
-        id: identificador único.
-        student_name: nome do aluno.
-        date: data da presença (YYYY-MM-DD).
-        present: booleano indicando se o aluno esteve presente.
+
+    Attributes:
+      id (int): identificador único.
+      student_name (str): nome do aluno.
+      date (date): data da presença (formato YYYY-MM-DD).
+      present (bool): True se o aluno estava presente.
     """
     id = db.Column(db.Integer, primary_key=True)
+    # Utilizamos uma função lambda para evitar o aviso de depreciação,
+    # criando um objeto datetime com consciência de fuso horário (UTC)
+    date = db.Column(db.Date, nullable=False, default=lambda: datetime.now(timezone.utc).date())
     student_name = db.Column(db.String(100), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date())
     present = db.Column(db.Boolean, nullable=False, default=True)
 
 class Activity(db.Model):
     """
-    Modelo para representar uma atividade realizada por um aluno.
-    Atributos:
-        id: identificador único da atividade.
-        student_name: nome do aluno.
-        description: descrição da atividade (ex.: desenho, tarefa).
-        activity_date: data/hora do registro.
+    Modelo para representar uma atividade realizada.
+
+    Attributes:
+      id (int): identificador único.
+      student_name (str): nome do aluno.
+      description (str): descrição da atividade.
+      activity_date (datetime): data/hora do registro.
     """
     id = db.Column(db.Integer, primary_key=True)
     student_name = db.Column(db.String(100), nullable=False)
@@ -81,7 +99,15 @@ class Activity(db.Model):
 def index():
     """
     Rota raiz para verificar se a API está funcionando.
-    Retorna uma mensagem simples.
+    ---
+    tags:
+      - Index
+    responses:
+      200:
+        description: Mensagem de status da API.
+        examples:
+          application/json:
+            message: API de Gestão Escolar - Back-end em Flask (Projeto sis-esco)
     """
     return jsonify({'message': 'API de Gestão Escolar - Back-end em Flask (Projeto sis-esco)'}), 200
 
@@ -90,8 +116,31 @@ def index():
 @app.route('/payments', methods=['GET'])
 def get_payments():
     """
-    GET /payments
-    Retorna uma lista de todos os pagamentos cadastrados.
+    Lista todos os pagamentos cadastrados.
+    ---
+    tags:
+      - Pagamentos
+    responses:
+      200:
+        description: Lista de pagamentos.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Payment'
+    definitions:
+      Payment:
+        type: object
+        properties:
+          id:
+            type: integer
+          student_name:
+            type: string
+          amount:
+            type: number
+          payment_date:
+            type: string
+          status:
+            type: string
     """
     payments = Payment.query.all()
     results = [
@@ -108,12 +157,36 @@ def get_payments():
 @app.route('/payments', methods=['POST'])
 def create_payment():
     """
-    POST /payments
-    Cria um registro de pagamento.
-    Espera receber um JSON com:
-      - student_name: nome do aluno ou responsável.
-      - amount: valor do pagamento.
-      - status: opcional, 'pago' ou 'pendente' (padrão 'pendente').
+    Cria um novo pagamento.
+    ---
+    tags:
+      - Pagamentos
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            student_name:
+              type: string
+            amount:
+              type: number
+            status:
+              type: string
+              default: pendente
+    responses:
+      201:
+        description: Pagamento criado com sucesso.
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+            id:
+              type: integer
+      400:
+        description: Dados insuficientes.
     """
     data = request.get_json()
     if not data or 'student_name' not in data or 'amount' not in data:
@@ -126,7 +199,6 @@ def create_payment():
     )
     db.session.add(new_payment)
     db.session.commit()
-    
     return jsonify({"message": "Pagamento criado com sucesso!", "id": new_payment.id}), 201
 
 # ----- Endpoints para Presenças -----
@@ -134,9 +206,34 @@ def create_payment():
 @app.route('/attendances', methods=['GET'])
 def get_attendances():
     """
-    GET /attendances
-    Retorna registros de presença.
-    Permite filtrar por 'student_name' via parâmetros de query.
+    Lista registros de presença.
+    ---
+    tags:
+      - Presenças
+    parameters:
+      - name: student_name
+        in: query
+        type: string
+        description: Filtra por nome do aluno
+    responses:
+      200:
+        description: Lista de registros de presença.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Attendance'
+    definitions:
+      Attendance:
+        type: object
+        properties:
+          id:
+            type: integer
+          student_name:
+            type: string
+          date:
+            type: string
+          present:
+            type: boolean
     """
     student_name = request.args.get('student_name')
     query = Attendance.query
@@ -156,12 +253,37 @@ def get_attendances():
 @app.route('/attendances', methods=['POST'])
 def create_attendance():
     """
-    POST /attendances
-    Registra a presença de um aluno.
-    Espera receber um JSON com:
-      - student_name: nome do aluno.
-      - date: opcional, data da presença (YYYY-MM-DD); se não informado, usa a data atual.
-      - present: opcional, booleano indicando presença (padrão True).
+    Cria um registro de presença.
+    ---
+    tags:
+      - Presenças
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            student_name:
+              type: string
+            date:
+              type: string
+              description: Data da presença no formato YYYY-MM-DD (opcional)
+            present:
+              type: boolean
+              default: true
+    responses:
+      201:
+        description: Presença registrada com sucesso.
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+            id:
+              type: integer
+      400:
+        description: Dados insuficientes ou formato de data inválido.
     """
     data = request.get_json()
     if not data or 'student_name' not in data:
@@ -173,8 +295,8 @@ def create_attendance():
         except ValueError:
             return jsonify({"error": "Formato de data inválido. Use YYYY-MM-DD."}), 400
     else:
-        record_date = datetime.utcnow().date()
-    
+        record_date = datetime.now(timezone.utc).date()
+
     new_attendance = Attendance(
         student_name=data['student_name'],
         date=record_date,
@@ -182,7 +304,6 @@ def create_attendance():
     )
     db.session.add(new_attendance)
     db.session.commit()
-    
     return jsonify({"message": "Presença registrada com sucesso!", "id": new_attendance.id}), 201
 
 # ----- Endpoints para Atividades -----
@@ -190,9 +311,34 @@ def create_attendance():
 @app.route('/activities', methods=['GET'])
 def get_activities():
     """
-    GET /activities
-    Retorna registro de atividades.
-    Permite filtrar por 'student_name' via query.
+    Lista todas as atividades registradas.
+    ---
+    tags:
+      - Atividades
+    parameters:
+      - name: student_name
+        in: query
+        type: string
+        description: Filtra por nome do aluno
+    responses:
+      200:
+        description: Lista de atividades.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Activity'
+    definitions:
+      Activity:
+        type: object
+        properties:
+          id:
+            type: integer
+          student_name:
+            type: string
+          description:
+            type: string
+          activity_date:
+            type: string
     """
     student_name = request.args.get('student_name')
     query = Activity.query
@@ -212,11 +358,33 @@ def get_activities():
 @app.route('/activities', methods=['POST'])
 def create_activity():
     """
-    POST /activities
-    Registra uma nova atividade realizada por um aluno.
-    Espera receber um JSON com:
-      - student_name: nome do aluno.
-      - description: descrição da atividade.
+    Registra uma nova atividade.
+    ---
+    tags:
+      - Atividades
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            student_name:
+              type: string
+            description:
+              type: string
+    responses:
+      201:
+        description: Atividade registrada com sucesso.
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+            id:
+              type: integer
+      400:
+        description: Dados insuficientes.
     """
     data = request.get_json()
     if not data or 'student_name' not in data or 'description' not in data:
@@ -228,26 +396,36 @@ def create_activity():
     )
     db.session.add(new_activity)
     db.session.commit()
-    
     return jsonify({"message": "Atividade registrada com sucesso!", "id": new_activity.id}), 201
 
-# ----- Endpoint para Inicializar o Banco de Dados -----
-
+# ----- Endpoint para Reinicializar o Banco de Dados -----
 @app.route('/initdb', methods=['GET'])
 def init_db():
     """
-    GET /initdb
-    Reinicializa o banco de dados: remove todas as tabelas existentes e recria.
-    ATENÇÃO: Utilize este endpoint somente em ambiente de desenvolvimento, pois apaga todos os dados!
+    Reinicializa o banco de dados removendo e recriando todas as tabelas.
+    
+    **Atenção:** Use este endpoint somente em ambiente de desenvolvimento, pois todos os dados serão apagados.
+    ---
+    tags:
+      - Banco de Dados
+    responses:
+      200:
+        description: Banco de dados inicializado com sucesso.
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
     """
-    db.drop_all()   # Remove todas as tabelas
-    db.create_all() # Cria as tabelas conforme os modelos definidos
+    db.drop_all()
+    db.create_all()
     return jsonify({"message": "Banco de dados inicializado com sucesso!"}), 200
+
 
 # --------------------- Inicialização da Aplicação ---------------------
 
 if __name__ == '__main__':
-    # Cria as tabelas se não existirem
-    db.create_all()
-    # Inicia o servidor Flask (debug ativo e acessível em todas as interfaces na porta 5000)
+    # Cria as tabelas dentro do contexto da aplicação
+    with app.app_context():
+        db.create_all()
     app.run(debug=True, host='0.0.0.0')
