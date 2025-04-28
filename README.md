@@ -1,4 +1,5 @@
 🚀 Sis-Esco - Sistema de Gestão Escolar
+
 Sis-Esco é uma API REST desenvolvida em Python com o framework Flask, utilizando Flask_SQLAlchemy para persistência de dados e Flasgger para a documentação de endpoints com Swagger.
 
 A API permite o gerenciamento de pagamentos, presenças e atividades escolares, tornando o fluxo administrativo mais eficiente.
@@ -56,17 +57,17 @@ sis-esco/
 
 ✅ Rodando a API com Docker
 
-1.Certifique-se de que o Docker está instalado e rodando no sistema.
+1. Certifique-se de que o Docker está instalado e rodando no sistema.
 
-2.Navegue até a pasta App/ e execute o comando para construir a imagem:
+2. Navegue até a pasta App/ e execute o comando para construir a imagem:
 
 docker build -t sis-esco .
 
-3.Agora, inicie o container:
+3. Agora, inicie o container:
 
 docker run -d -p 5000:5000 sis-esco
 
-4.Acesse no navegador:
+4. Acesse no navegador:
 
 http://localhost:5000/
 
@@ -76,26 +77,26 @@ http://localhost:5000/
 
 Caso prefira rodar sem Docker, siga os seguintes passos:
 
-1.Crie um ambiente virtual (recomendado para evitar conflitos de dependências):
+1. Crie um ambiente virtual (recomendado para evitar conflitos de dependências):
 
 python -m venv venv
 
-2.Ative o ambiente virtual:
+2. Ative o ambiente virtual:
 
 Windows (PowerShell):
 
 .\venv\Scripts\Activate.ps1
 
-3.Instale as dependências:
+3. Instale as dependências:
 
 pip install -r requirements.txt
 
-4.Inicie a aplicação Flask:
+4. Inicie a aplicação Flask:
 
 python app.py
 
-5.Acesse a API no navegador:
-
+5. Acesse a API no navegador:
+ 
 http://localhost:5000/
 
 -----------------------------------------------------------------------
@@ -104,9 +105,9 @@ http://localhost:5000/
 
 Todos os endpoints CRUD da API estão documentados no Swagger UI.
 
-1.Inicie a API (com Docker ou sem Docker).
+1. Inicie a API (com Docker ou sem Docker).
 
-2.Abra o navegador e acesse:
+2. Abra o navegador e acesse:
 
 http://localhost:5000/api/docs
 
@@ -141,15 +142,15 @@ GET /initdb → Apaga e recria o banco de dados (⚠️ Apenas em ambiente de de
 
 Quer contribuir com o projeto? Siga os passos:
 
-1.Clone o repositório:
+1. Clone o repositório:
 
 git clone https://github.com/seu-usuario/sis-esco.git
 
-2.Crie uma branch para suas alterações:
+2. Crie uma branch para suas alterações:
 
 git checkout -b feature-minha-melhoria
 
-3.Faça as modificações e envie para análise:
+3. Faça as modificações e envie para análise:
 
 git add .
 
@@ -157,6 +158,6 @@ git commit -m "Adicionando melhoria na API"
 
 git push origin feature-minha-melhoria
 
-4.Abra um Pull Request no GitHub 🎉
+4. Abra um Pull Request no GitHub 🎉
 
 -----------------------------------------------------------------------
