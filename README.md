@@ -23,30 +23,33 @@
 
 sis-esco/
 
-├── App/                   # Código-fonte da API
+├── App/# Código-fonte da API
 
-│   ├── app.py             # Código principal (Flask API)
+│   ├── app.py# Código principal (Flask API)
 
-│   ├── requirements.txt   # Lista de dependências do Python
+│   ├── requirements.txt# Lista de dependências do Python
 
-│   ├── Dockerfile         # Dockerfile para rodar a API
+│   ├── Dockerfile# Dockerfile para rodar a API
 
-│   └── README.md          # Instruções da aplicação
+│   └── README.md# Instruções da aplicação
 
-├── BD/                    # Configuração do Banco de Dados
+├── BD/# Configuração do Banco de Dados
 
-│   ├── arquivo.sql        # Script DDL para criação do BD
+│   ├── arquivo.sql# Script DDL para criação do BD
 
-│   ├── Dockerfile         # Dockerfile do banco de dados (se necessário)
+│   ├── Dockerfil# Dockerfile do banco de dados (se necessário)
 
-│   └── README.md          # Instruções para o BD
+│   └── README.md# Instruções para o BD
 
-└── Observabilidade/        # Monitoramento
+└── Observabilidade/# Monitoramento
 
-    ├── prometheus/        # Configuração do Prometheus
+    ├── prometheus/# Configuração do Prometheus
 		
-    ├── grafana/           # Configuração do Grafana  
-		
+    ├── grafana/ # Configuração do Grafana  
+├──Readme.md
+
+├──docker-compose.yml
+
 -----------------------------------------------------------------------
 
 
