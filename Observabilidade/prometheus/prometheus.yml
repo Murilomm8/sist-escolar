@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres_exporter:9187']
+
+
+###> Explicação: > - Este arquivo define o intervalo para coletar métricas e indica que o Prometheus deve fazer scrape no serviço postgres_exporter, que está rodando na porta 9187.

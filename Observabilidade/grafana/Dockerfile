@@ -1,2 +1,2 @@
 # Dockerfile para Grafana
-FROM grafana/grafana
+FROM grafana/grafana:latest
