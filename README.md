@@ -20,7 +20,6 @@
 ## 📐 Estrutura do Projeto
 
 
-
 sis-esco/
 
 ├── App/# Código-fonte da API
@@ -50,9 +49,6 @@ sis-esco/
 
 ├──docker-compose.yml
 
------------------------------------------------------------------------
-
-
 ---
 
 ## 🚀 Como Rodar a Aplicação
@@ -77,7 +73,8 @@ docker ps
 5. Acessando a API:
 API: http://localhost:5000/
 Documentação Swagger (endpoints CRUD): http://localhost:5000/api/docs
------------------------------------------------------------------------
+
+---
 
 ✅ Rodando a API sem Docker
 
@@ -97,7 +94,8 @@ python App/app.py
 5. Acesse a API:
 Navegador: http://localhost:5000/
 Documentação Swagger: http://localhost:5000/api/docs
------------------------------------------------------------------------
+
+---
 
 📖 Acessando a Documentação Swagger
 
@@ -108,7 +106,7 @@ Todos os endpoints CRUD da API estão documentados no Swagger UI.
 2. Abra o navegador e acesse:
 http://localhost:5000/api/docs
 
------------------------------------------------------------------------
+---
 
 🔄 Endpoints CRUD Disponíveis
 
@@ -134,7 +132,7 @@ POST /activities → Registrar uma nova atividade { "student_name": "Lucas", "de
 
 GET /initdb → Apaga e recria o banco de dados (⚠️ Apenas em ambiente de desenvolvimento).
 
------------------------------------------------------------------------
+---
 
 📊 Monitoramento (Observabilidade do BD)
 O ambiente de observabilidade é configurado via Docker Compose e integra:
@@ -164,7 +162,7 @@ Tamanho e crescimento do BD.
 
 Métricas de locks e contendas, entre outras.
 
------------------------------------------------------------------------
+---
 
 🚀 Observabilidade com Docker Compose
 O arquivo docker-compose.yml na raiz do projeto provisiona os seguintes serviços:
@@ -177,7 +175,8 @@ Prometheus: Para coletar e armazenar as métricas.
 
 Grafana: Para visualização e criação de dashboards.
 
------------------------------------------------------------------------
+---
+
 🤝 Contribuições
 
 Quer contribuir com o projeto? Siga os passos:
@@ -200,4 +199,4 @@ git push origin feature-minha-melhoria
 
 4. Abra um Pull Request no GitHub 🎉
 
------------------------------------------------------------------------
+---
