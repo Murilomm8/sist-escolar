@@ -93,6 +93,19 @@ class Activity(db.Model):
     description = db.Column(db.Text, nullable=False)
     activity_date = db.Column(db.DateTime, default=datetime.utcnow)
 
+class Student(db.Model):
+    """
+    Modelo para representar um aluno.
+
+    Attributes:
+      id (int): Identificador único do aluno.
+      name (str): Nome do aluno.
+      birth_date (date): Data de nascimento do aluno (formato YYYY-MM-DD, opcional).
+    """
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    birth_date = db.Column(db.Date, nullable=True)
+
 # --------------------- ROTAS DA API ---------------------
 
 @app.route('/')
@@ -397,6 +410,98 @@ def create_activity():
     db.session.add(new_activity)
     db.session.commit()
     return jsonify({"message": "Atividade registrada com sucesso!", "id": new_activity.id}), 201
+
+# ----- Endpoints para Alunos -----
+@app.route('/students', methods=['GET'])
+def get_students():
+    """
+    Lista todos os alunos cadastrados.
+    ---
+    tags:
+      - Alunos
+    responses:
+      200:
+        description: Lista de alunos.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Student'
+    definitions:
+      Student:
+        type: object
+        properties:
+          id:
+            type: integer
+            description: ID único do aluno.
+          name:
+            type: string
+            description: Nome do aluno.
+          birth_date:
+            type: string
+            description: Data de nascimento no formato YYYY-MM-DD.
+    """
+    students = Student.query.all()
+    results = [
+        {
+            "id": student.id,
+            "name": student.name,
+            "birth_date": student.birth_date.strftime("%Y-%m-%d") if student.birth_date else None
+        } for student in students
+    ]
+    return jsonify(results), 200
+
+@app.route('/students', methods=['POST'])
+def create_student():
+    """
+    Registra um novo aluno.
+    ---
+    tags:
+      - Alunos
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          properties:
+            name:
+              type: string
+              description: Nome do aluno.
+            birth_date:
+              type: string
+              description: Data de nascimento no formato YYYY-MM-DD (opcional).
+    responses:
+      201:
+        description: Aluno criado com sucesso.
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+            id:
+              type: integer
+      400:
+        description: Dados insuficientes ou inválidos.
+    """
+    data = request.get_json()
+    if not data or 'name' not in data:
+        return jsonify({"error": "Dados insuficientes."}), 400
+
+    birth_date = None
+    if 'birth_date' in data:
+        try:
+            birth_date = datetime.strptime(data['birth_date'], "%Y-%m-%d").date()
+        except ValueError:
+            return jsonify({"error": "Formato de data inválido. Use YYYY-MM-DD."}), 400
+
+    new_student = Student(
+        name=data['name'],
+        birth_date=birth_date
+    )
+    db.session.add(new_student)
+    db.session.commit()
+    return jsonify({"message": "Aluno criado com sucesso!", "id": new_student.id}), 201
+
 
 # ----- Endpoint para Reinicializar o Banco de Dados -----
 @app.route('/initdb', methods=['GET'])
