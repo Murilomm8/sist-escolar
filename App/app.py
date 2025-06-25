@@ -22,9 +22,16 @@ from datetime import datetime, timezone
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flasgger import Swagger
+from prometheus_flask_exporter import PrometheusMetrics
+import logging
+
 
 # Criação da aplicação Flask
 app = Flask(__name__)
+
+# Inicializa Prometheus após criar o app
+metrics = PrometheusMetrics(app)
+
 
 # Configuração do banco de dados (SQLite)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -533,4 +540,4 @@ if __name__ == '__main__':
     # Cria as tabelas dentro do contexto da aplicação
     with app.app_context():
         db.create_all()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0')

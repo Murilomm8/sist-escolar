@@ -1,13 +1,13 @@
-# Placeholder: Este Dockerfile pode ser adaptado para criar um container para o SGBD desejado.
-# Exemplo com SQLite (para desenvolvimento) não é o ideal para produção.
-# Para uso em produção, recomenda-se utilizar PostgreSQL ou MySQL com as respectivas configurações.
+# Usa a imagem oficial do PostgreSQL
+FROM postgres:14-alpine
 
-FROM ubuntu:20.04
+# Variáveis de ambiente
+ENV POSTGRES_DB=escola
+ENV POSTGRES_USER=root
+ENV POSTGRES_PASSWORD=123456
 
-RUN apt-get update && \
-    apt-get install -y sqlite3 && \
-    rm -rf /var/lib/apt/lists/*
+# Copia e executa o DDL na inicialização do container
+COPY arquivo.sql /docker-entrypoint-initdb.d/
 
-WORKDIR /data
-
-CMD ["sqlite3", "school.db"]
+# Expõe a porta padrão do Postgres
+EXPOSE 5432
