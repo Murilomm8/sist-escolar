@@ -192,12 +192,14 @@ curl -X GET http://localhost:5000/initdb
  Estrutura de arquivos
 sist-escolar/
 ├── APP/
-│   ├── app.py
-│   ├── models.py
-│   └── routes.py
 ├── Dockerfile
+├── README.md
+├── app.py
+├── models.py
+├── pip
 ├── requirements.txt
-└── README.md
+├── routes.py
+└── school.db
  Próximos passos
 Ajustar validações e mensagens de erro.
 
