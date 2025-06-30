@@ -163,7 +163,7 @@ Tamanho e crescimento do BD.
 
 Métricas de locks e contendas, entre outras.
 
-(teste com grafane em /script/test.json)
+teste com grafana em /script/test.json
 ---
 
 🚀 Observabilidade com Docker Compose
