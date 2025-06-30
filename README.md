@@ -147,6 +147,7 @@ Grafana: Permite criar dashboards interativos para visualizar essas métricas.
 
 Para acessar:
 Prometheus: http://localhost:9090
+test: flask_http_request_total
 
 Grafana: http://localhost:3000 (Login padrão: admin/admin – configure o Prometheus como Data Source com URL http://prometheus-sis-esco:9090 ou http://localhost:9090)
 
@@ -162,6 +163,7 @@ Tamanho e crescimento do BD.
 
 Métricas de locks e contendas, entre outras.
 
+(teste com grafane em /script/test.json)
 ---
 
 🚀 Observabilidade com Docker Compose
@@ -183,7 +185,7 @@ Quer contribuir com o projeto? Siga os passos:
 
 1. Clone o repositório:
 
-git clone https://github.com/seu-usuario/sis-esco.git
+git clone https://github.com/Murilomm8/sist-escolar.git
 
 2. Crie uma branch para suas alterações:
 
